@@ -1,10 +1,10 @@
 {
-  "name": "PancakeSwap",
+  "name": "KebabSwap",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "migrate": "truffle migrate --network bscTestnet --reset",
-    "compile": "truffle compile --network bscTestnet",
+    "migrate": "truffle migrate --network development --reset",
+    "compile": "truffle compile --network development",
     "test": "npx builder test",
     "coverage": "npx builder coverage"
   },
@@ -12,7 +12,7 @@
     "@openzeppelin/test-helpers": "^0.5.6",
     "@pancakeswap/pancake-swap-lib": "^0.0.1",
     "truffle": "^5.1.58",
-    "truffle-flattener": "^1.4.4"
+    "truffle-flattener": "^1.5.0"
   },
   "devDependencies": {
     "@nomiclabs/buidler": "^1.4.7",
