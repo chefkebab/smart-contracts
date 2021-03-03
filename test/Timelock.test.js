@@ -1,10 +1,10 @@
 const { expectRevert, time } = require('@openzeppelin/test-helpers');
 const ethers = require('ethers');
-const CakeToken = artifacts.require('CakeToken');
+const ChefToken = artifacts.require('ChefToken');
 const MasterChef = artifacts.require('MasterChef');
 const MockBEP20 = artifacts.require('libs/MockBEP20');
 const Timelock = artifacts.require('Timelock');
-const SyrupBar = artifacts.require('SyrupBar');
+const KetchupBar = artifacts.require('KetchupBar');
 
 function encodeParameters(types, values) {
     const abi = new ethers.utils.AbiCoder();
@@ -13,7 +13,7 @@ function encodeParameters(types, values) {
 
 contract('Timelock', ([alice, bob, carol, dev, minter]) => {
     beforeEach(async () => {
-        this.cake = await CakeToken.new({ from: alice });
+        this.cake = await ChefToken.new({ from: alice });
         this.timelock = await Timelock.new(bob, '28800', { from: alice }); //8hours
     });
 
@@ -64,7 +64,7 @@ contract('Timelock', ([alice, bob, carol, dev, minter]) => {
     it('should also work with MasterChef', async () => {
         this.lp1 = await MockBEP20.new('LPToken', 'LP', '10000000000', { from: minter });
         this.lp2 = await MockBEP20.new('LPToken', 'LP', '10000000000', { from: minter });
-        this.syrup = await SyrupBar.new(this.cake.address, { from: minter });
+        this.syrup = await KetchupBar.new(this.cake.address, { from: minter });
         this.chef = await MasterChef.new(this.cake.address, this.syrup.address, dev, '1000', '0', { from: alice });
         await this.cake.transferOwnership(this.chef.address, { from: alice });
         await this.syrup.transferOwnership(this.chef.address, { from: minter });
