@@ -45,7 +45,7 @@ contract BurnChef is Ownable {
             newPeriods = newPeriods.sub(1);
         }
         uint256 reward = _amount.div(10**9).mul(ratio);
-        mars.mint(address(msg.sender), _amount);
+        mars.mint(address(msg.sender), reward);
         
         emit Burn(address(msg.sender), _amount, reward);
     }
