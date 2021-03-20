@@ -61,6 +61,10 @@ contract BnbStaking is Ownable {
     event Deposit(address indexed user, uint256 amount);
     event Withdraw(address indexed user, uint256 amount);
     event EmergencyWithdraw(address indexed user, uint256 amount);
+    event SetAdmin(address indexed user, address indexed _adminAddress);
+    event SetBlackList(address indexed user, address indexed _blacklistAddress);
+    event RemoveBlackList(address indexed user, address indexed _blacklistAddress);
+    event setLimitAmount(address indexed user, uint256 amount);
 
     constructor(
         IBEP20 _lp,
@@ -102,19 +106,23 @@ contract BnbStaking is Ownable {
     // Update admin address by the previous dev.
     function setAdmin(address _adminAddress) public onlyOwner {
         adminAddress = _adminAddress;
+        emit SetAdmin(msg.sender, _adminAddress);
     }
 
     function setBlackList(address _blacklistAddress) public onlyAdmin {
         userInfo[_blacklistAddress].inBlackList = true;
+        emit SetBlackList(msg.sender, _blacklistAddress);
     }
 
     function removeBlackList(address _blacklistAddress) public onlyAdmin {
         userInfo[_blacklistAddress].inBlackList = false;
+        emit RemoveBlackList(msg.sender, _blacklistAddress);
     }
 
     // Set the limit amount. Can only be called by the owner.
     function setLimitAmount(uint256 _amount) public onlyOwner {
         limitAmount = _amount;
+        emit SetLimitAmount(msg.sender, _amount);
     }
 
     // Return reward multiplier over the given _from to _to block.
@@ -185,8 +193,8 @@ contract BnbStaking is Ownable {
         }
         if(msg.value > 0) {
             IWBNB(WBNB).deposit{value: msg.value}();
-            assert(IWBNB(WBNB).transfer(address(this), msg.value));
             user.amount = user.amount.add(msg.value);
+            assert(IWBNB(WBNB).transfer(address(this), msg.value));
         }
         user.rewardDebt = user.amount.mul(pool.accCakePerShare).div(1e12);
 
@@ -200,7 +208,7 @@ contract BnbStaking is Ownable {
     }
 
     // Withdraw tokens from STAKING.
-    function withdraw(uint256 _amount) public {
+    function withdraw(uint256 _amount) external {
         PoolInfo storage pool = poolInfo[0];
         UserInfo storage user = userInfo[msg.sender];
         require(user.amount >= _amount, "withdraw: not good");
@@ -223,8 +231,8 @@ contract BnbStaking is Ownable {
     function emergencyWithdraw() public {
         PoolInfo storage pool = poolInfo[0];
         UserInfo storage user = userInfo[msg.sender];
-        pool.lpToken.safeTransfer(address(msg.sender), user.amount);
         emit EmergencyWithdraw(msg.sender, user.amount);
+        pool.lpToken.safeTransfer(address(msg.sender), user.amount);
         user.amount = 0;
         user.rewardDebt = 0;
     }
