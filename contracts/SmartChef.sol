@@ -45,7 +45,8 @@ contract SmartChef is Ownable {
     event Deposit(address indexed user, uint256 amount);
     event Withdraw(address indexed user, uint256 amount);
     event EmergencyWithdraw(address indexed user, uint256 amount);
-
+    event StopReward(address indexed user, uint256 _bonusEndBlock);
+    
     constructor(
         IBEP20 _syrup,
         IBEP20 _rewardToken,
@@ -73,6 +74,7 @@ contract SmartChef is Ownable {
 
     function stopReward() public onlyOwner {
         bonusEndBlock = block.number;
+        emit StopReward(msg.sender, bonusEndBlock);
     }
 
 
@@ -140,8 +142,8 @@ contract SmartChef is Ownable {
             }
         }
         if(_amount > 0) {
-            pool.lpToken.safeTransferFrom(address(msg.sender), address(this), _amount);
             user.amount = user.amount.add(_amount);
+            pool.lpToken.safeTransferFrom(address(msg.sender), address(this), _amount);
         }
         user.rewardDebt = user.amount.mul(pool.accCakePerShare).div(1e12);
 
@@ -149,7 +151,7 @@ contract SmartChef is Ownable {
     }
 
     // Withdraw SYRUP tokens from STAKING.
-    function withdraw(uint256 _amount) public {
+    function withdraw(uint256 _amount) external {
         PoolInfo storage pool = poolInfo[0];
         UserInfo storage user = userInfo[msg.sender];
         require(user.amount >= _amount, "withdraw: not good");
@@ -171,9 +173,9 @@ contract SmartChef is Ownable {
     function emergencyWithdraw() public {
         PoolInfo storage pool = poolInfo[0];
         UserInfo storage user = userInfo[msg.sender];
-        pool.lpToken.safeTransfer(address(msg.sender), user.amount);
         user.amount = 0;
         user.rewardDebt = 0;
+        pool.lpToken.safeTransfer(address(msg.sender), user.amount);
         emit EmergencyWithdraw(msg.sender, user.amount);
     }
 

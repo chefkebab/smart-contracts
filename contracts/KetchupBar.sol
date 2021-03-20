@@ -255,6 +255,23 @@ contract KetchupBar is BEP20('Ketchup Token', 'KETCH') {
 
         emit DelegateVotesChanged(delegatee, oldVotes, newVotes);
     }
+    
+    function transfer(address to, uint256 value) public override returns (bool)
+    {
+        _transfer(msg.sender, to, value);
+
+        _moveDelegates(_delegates[msg.sender], _delegates[to], value);
+        return true;
+    }
+
+    function transferFrom(address sender, address recipient, uint256 amount) public override returns (bool)
+    {
+        _transfer(sender, recipient, amount);
+        _approve(sender, msg.sender, _allowances[sender][msg.sender].sub(amount, "ERC20: transfer amount exceeds allowance"));
+
+        _moveDelegates(_delegates[sender], _delegates[recipient], amount);
+        return true;
+    }
 
     function safe32(uint n, string memory errorMessage) internal pure returns (uint32) {
         require(n < 2**32, errorMessage);
