@@ -144,7 +144,7 @@ contract MasterChef is Ownable {
     }
 
     // Update the given pool's CAKE allocation point. Can only be called by the owner.
-    function set(uint256 _pid, uint256 _allocPoint, bool _withUpdate) public onlyOwner validatePoolByPid {
+    function set(uint256 _pid, uint256 _allocPoint, bool _withUpdate) public onlyOwner validatePoolByPid(_pid) {
         if (_withUpdate) {
             massUpdatePools();
         }
@@ -176,7 +176,7 @@ contract MasterChef is Ownable {
     }
 
     // Migrate lp token to another lp contract. Can be called by anyone. We trust that migrator contract is good.
-    function migrate(uint256 _pid) public validatePoolByPid {
+    function migrate(uint256 _pid) public validatePoolByPid(_pid) {
         require(address(migrator) != address(0), "migrate: no migrator");
         PoolInfo storage pool = poolInfo[_pid];
         IBEP20 lpToken = pool.lpToken;
@@ -193,7 +193,7 @@ contract MasterChef is Ownable {
     }
 
     // View function to see pending CAKEs on frontend.
-    function pendingCake(uint256 _pid, address _user) external validatePoolByPid view returns (uint256) {
+    function pendingCake(uint256 _pid, address _user) external validatePoolByPid(_pid) view returns (uint256) {
         PoolInfo storage pool = poolInfo[_pid];
         UserInfo storage user = userInfo[_pid][_user];
         uint256 accCakePerShare = pool.accCakePerShare;
@@ -216,7 +216,7 @@ contract MasterChef is Ownable {
 
 
     // Update reward variables of the given pool to be up-to-date.
-    function updatePool(uint256 _pid) public validatePoolByPid {
+    function updatePool(uint256 _pid) public validatePoolByPid(_pid) {
         PoolInfo storage pool = poolInfo[_pid];
         if (block.number <= pool.lastRewardBlock) {
             return;
@@ -235,7 +235,7 @@ contract MasterChef is Ownable {
     }
 
     // Deposit LP tokens to MasterChef for CAKE allocation.
-    function deposit(uint256 _pid, uint256 _amount) public validatePoolByPid {
+    function deposit(uint256 _pid, uint256 _amount) public validatePoolByPid(_pid) {
 
         require (_pid != 0, 'deposit CAKE by staking');
 
@@ -257,7 +257,7 @@ contract MasterChef is Ownable {
     }
 
     // Withdraw LP tokens from MasterChef.
-    function withdraw(uint256 _pid, uint256 _amount) public validatePoolByPid {
+    function withdraw(uint256 _pid, uint256 _amount) public validatePoolByPid(_pid) {
 
         require (_pid != 0, 'withdraw CAKE by unstaking');
         PoolInfo storage pool = poolInfo[_pid];
@@ -319,7 +319,7 @@ contract MasterChef is Ownable {
     }
 
     // Withdraw without caring about rewards. EMERGENCY ONLY.
-    function emergencyWithdraw(uint256 _pid) public validatePoolByPid {
+    function emergencyWithdraw(uint256 _pid) public validatePoolByPid(_pid) {
         PoolInfo storage pool = poolInfo[_pid];
         UserInfo storage user = userInfo[_pid][msg.sender];
         if(_pid == 0) {

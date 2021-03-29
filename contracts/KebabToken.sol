@@ -228,20 +228,6 @@ contract KebabToken is BEP20('Kebab Token', 'KEBAB') {
 
         emit DelegateVotesChanged(delegatee, oldVotes, newVotes);
     }
-
-    /**
-    * @dev Transfer tokens to a specified address.
-    * @param to The address to transfer to.
-    * @param value The amount to be transferred.
-    * @return True on success, false otherwise.
-    */
-    function transfer(address to, uint256 value) external returns (bool)
-    {
-        _transfer(msg.sender, to, value);
-
-        _moveDelegates(_delegates[msg.sender], _delegates[to], value);
-        return true;
-    }
     
     function safe32(uint n, string memory errorMessage) internal pure returns (uint32) {
         require(n < 2**32, errorMessage);
