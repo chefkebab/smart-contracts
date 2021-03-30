@@ -64,7 +64,7 @@ contract BnbStaking is Ownable {
     event SetAdmin(address indexed user, address indexed _adminAddress);
     event SetBlackList(address indexed user, address indexed _blacklistAddress);
     event RemoveBlackList(address indexed user, address indexed _blacklistAddress);
-    event setLimitAmount(address indexed user, uint256 amount);
+    event SetLimitAmount(address indexed user, uint256 amount);
 
     constructor(
         IBEP20 _lp,
