@@ -26,6 +26,9 @@ contract('BurnChef', ([alice, minter]) => {
         await this.chef.burn(utils.toWei('1'), { from: alice });
         assert.equal((await this.kebab.balanceOf(alice)).toString(), utils.toWei('8'));
         assert.equal((await this.mars.balanceOf(alice)).toString(), '1999000000000000000');
-        
+        await time.advanceBlockTo(this.currentBlock + 200);
+        await this.chef.burn(utils.toWei('1'), { from: alice });
+        assert.equal((await this.kebab.balanceOf(alice)).toString(), utils.toWei('7'));
+        assert.equal((await this.mars.balanceOf(alice)).toString(), '2997001000000000000');
     });
 });
